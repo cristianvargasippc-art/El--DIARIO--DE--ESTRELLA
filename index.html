@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Diario de Estrella</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50: #e6f1fb;
+      --blue-100: #b5d4f4;
+      --blue-200: #85b7eb;
+      --blue-300: #5b9de3;
+      --blue-400: #378add;
+      --blue-500: #2070c0;
+      --blue-600: #185fa5;
+      --blue-700: #10488a;
+      --blue-800: #0c447c;
+      --blue-900: #042c53;
+      --navy: #0a1628;
+      --soft-white: #f9fbfe;
+      --card-bg: #ffffff;
+      --text-primary: #0a1628;
+      --text-secondary: #4a6080;
+      --text-muted: #8ea5be;
+      --border: #dce8f4;
+      --shadow: 0 2px 20px rgba(23, 95, 165, 0.08);
+      --shadow-hover: 0 8px 32px rgba(23, 95, 165, 0.15);
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'DM Sans', sans-serif;
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--soft-white);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--navy);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #fff;
+      letter-spacing: 0.03em;
+      font-style: italic;
+    }
+
+    .logo span {
+      color: var(--blue-300);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 400;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    nav a:hover, nav a.active {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+
+    nav a.admin-link {
+      color: var(--blue-300);
+      border: 1px solid rgba(55, 138, 221, 0.3);
+    }
+
+    nav a.admin-link:hover {
+      background: rgba(55, 138, 221, 0.15);
+      color: var(--blue-200);
+    }
+
+    /* PAGES */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #0f2044 50%, #162a52 100%);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 60% 40%, rgba(55, 138, 221, 0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-subtitle {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--blue-300);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 em {
+      color: var(--blue-200);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .hero-desc {
+      color: rgba(255,255,255,0.55);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* MAIN LAYOUT */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* SECTION TITLES */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    section.feed-section {
+      padding: 2.5rem 0;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    /* GRID LAYOUTS */
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.25rem; }
+
+    /* IMAGE CARD */
+    .img-card .img-wrapper {
+      width: 100%;
+      padding-top: 75%;
+      position: relative;
+      background: var(--blue-50);
+      overflow: hidden;
+    }
+
+    .img-card .img-wrapper img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .img-card:hover .img-wrapper img { transform: scale(1.04); }
+
+    .img-card-body {
+      padding: 1rem 1.2rem;
+    }
+
+    .img-card-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      color: var(--blue-600);
+      background: var(--blue-50);
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    .img-card-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 0.3rem;
+    }
+
+    .img-card-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* PENDING CARD */
+    .pending-card {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .pending-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pending-item:last-child { border-bottom: none; }
+
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 1.5px solid var(--blue-400);
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .check-box.done {
+      background: var(--blue-600);
+      border-color: var(--blue-600);
+    }
+
+    .check-box.done::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    .pending-text {
+      flex: 1;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .pending-text.done-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .pending-priority {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .priority-alta { background: #fce8e8; color: #b91c1c; }
+    .priority-media { background: #fef3cd; color: #92400e; }
+    .priority-baja { background: var(--blue-50); color: var(--blue-700); }
+
+    /* DAILY ROUTINE CARD */
+    .routine-card { padding: 1.25rem 1.5rem; }
+
+    .time-block {
+      display: flex;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .time-block:last-child { border-bottom: none; }
+
+    .time-label {
+      font-size: 0.75rem;
+      color: var(--blue-600);
+      font-weight: 500;
+      min-width: 52px;
+      padding-top: 2px;
+      font-family: var(--font-sans);
+      letter-spacing: 0.03em;
+    }
+
+    .time-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue-300);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .time-activity {
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* FINANCES */
+    .finance-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .fin-stat {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      text-align: center;
+    }
+
+    .fin-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .fin-stat-value {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .fin-stat-value.income { color: #059669; }
+    .fin-stat-value.expense { color: #dc2626; }
+    .fin-stat-value.savings { color: var(--blue-600); }
+
+    .finance-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .finance-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .fin-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .fin-icon.in { background: #d1fae5; }
+    .fin-icon.out { background: #fee2e2; }
+    .fin-icon.save { background: var(--blue-50); }
+
+    .fin-details { flex: 1; }
+    .fin-name { font-size: 0.88rem; font-weight: 500; color: var(--text-primary); }
+    .fin-date { font-size: 0.73rem; color: var(--text-muted); }
+
+    .fin-amount {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .fin-amount.in { color: #059669; }
+    .fin-amount.out { color: #dc2626; }
+    .fin-amount.save { color: var(--blue-600); }
+
+    /* CALENDAR */
+    .calendar-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .cal-title {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .cal-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .cal-btn:hover {
+      background: var(--blue-50);
+      border-color: var(--blue-200);
+      color: var(--blue-700);
+    }
+
+    .cal-year-select, .cal-month-select {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      background: transparent;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-day-name {
+      text-align: center;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 0.5rem 0;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-primary);
+      position: relative;
+      gap: 2px;
+    }
+
+    .cal-day:hover {
+      background: var(--blue-50);
+    }
+
+    .cal-day.today {
+      background: var(--blue-600);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .cal-day.selected {
+      background: var(--blue-100);
+      color: var(--blue-900);
+    }
+
+    .cal-day.special::after {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--blue-400);
+      position: absolute;
+      bottom: 4px;
+    }
+
+    .cal-day.today.special::after { background: rgba(255,255,255,0.7); }
+
+    .cal-day.empty { cursor: default; }
+
+    .cal-events {
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    .cal-event-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .cal-event-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    .cal-event-item:last-child { border-bottom: none; }
+
+    .cal-event-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--blue-400);
+      flex-shrink: 0;
+    }
+
+    /* ADMIN PANEL */
+    .admin-header {
+      background: var(--navy);
+      padding: 2rem 2rem 1.5rem;
+      margin-bottom: 0;
+    }
+
+    .admin-header h2 {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: #fff;
+      font-style: italic;
+    }
+
+    .admin-header p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.82rem;
+      margin-top: 0.25rem;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 0;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      position: sticky;
+      top: 64px;
+      z-index: 50;
+    }
+
+    .admin-tab {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-tab.active {
+      color: var(--blue-600);
+      border-bottom-color: var(--blue-600);
+    }
+
+    .admin-content {
+      padding: 2rem;
+      max-width: 900px;
+    }
+
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    /* FORM STYLES */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      background: var(--card-bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px rgba(55, 138, 221, 0.12);
+    }
+
+    .form-textarea { min-height: 90px; resize: vertical; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .btn-primary {
+      background: var(--blue-600);
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: var(--blue-700); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--blue-600);
+      border: 1px solid var(--blue-300);
+      padding: 0.55rem 1.2rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: var(--blue-50);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* UPLOAD ZONE */
+    .upload-zone {
+      border: 2px dashed var(--blue-200);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--blue-50);
+    }
+
+    .upload-zone:hover {
+      border-color: var(--blue-400);
+      background: #ddeefa;
+    }
+
+    .upload-zone-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--blue-400);
+    }
+
+    .upload-zone p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .upload-zone input { display: none; }
+
+    /* IMAGE PREVIEW */
+    .img-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .img-preview-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      background: var(--border);
+    }
+
+    .img-preview-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .img-preview-remove {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      width: 20px; height: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-preview-item:hover .img-preview-remove {
+      display: flex;
+    }
+
+    /* ENTRIES TABLE */
+    .entries-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .entries-table th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    .entries-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .entries-table tr:last-child td { border-bottom: none; }
+    .entries-table tr:hover td { background: var(--blue-50); }
+
+    /* PROGRESS BAR */
+    .savings-goal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .savings-goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .savings-goal-name { font-size: 0.88rem; font-weight: 500; }
+
+    .savings-goal-pct {
+      font-size: 0.78rem;
+      color: var(--blue-600);
+      font-weight: 500;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--blue-50);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--blue-500);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .savings-goal-amounts {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    footer strong { color: var(--blue-600); }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--navy);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 9999;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* LOADING */
+    .loading-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue-400);
+      margin: 0 2px;
+      animation: bounce 1.2s infinite;
+    }
+
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--blue-200);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.6);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 540px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      .finance-summary { grid-template-columns: 1fr; }
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      nav a { font-size: 0.72rem; padding: 0.35rem 0.6rem; }
+      .logo { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">El Diario de <span>Estrella</span></div>
+  <nav>
+    <a href="#" class="active" onclick="showPage('home', this)">Inicio</a>
+    <a href="#" onclick="showPage('calendar', this)">Calendario</a>
+    <a href="#" onclick="showPage('finances', this)">Finanzas</a>
+    <a href="#" class="admin-link" onclick="showPage('admin', this)">Admin</a>
+  </nav>
+</header>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-subtitle">Mi espacio personal</div>
+    <h1>El Diario de <em>Estrella</em></h1>
+    <p class="hero-desc">Un lugar donde cada momento, cada plan y cada sueño tiene su lugar.</p>
+  </div>
+
+  <div class="container" style="padding-top:2.5rem;">
+
+    <!-- ROUTINE SECTION -->
+    <section class="feed-section">
+      <div class="section-head">
+        <h2 class="section-title">Rutina del dia</h2>
+        <div class="section-line"></div>
+        <span class="section-count" id="routine-count">cargando...</span>
+      </div>
+      <div class="grid-3" id="routine-feed">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PENDING SECTION -->
+    <section class="feed-section">
+      <div class="section-head">
+        <h2 class="section-title">Cosas pendientes</h2>
+        <div class="section-line"></div>
+        <span class="section-count" id="pending-count">cargando...</span>
+      </div>
+      <div class="grid-2" id="pending-feed">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMAGES SECTION -->
+    <section class="feed-section">
+      <div class="section-head">
+        <h2 class="section-title">Galeria</h2>
+        <div class="section-line"></div>
+        <span class="section-count" id="gallery-count">cargando...</span>
+      </div>
+      <div class="grid-4" id="gallery-feed">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINANCE SUMMARY ON HOME -->
+    <section class="feed-section">
+      <div class="section-head">
+        <h2 class="section-title">Resumen financiero</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="finance-summary" id="home-fin-summary">
+        <div class="fin-stat">
+          <div class="fin-stat-label">Ingresos del mes</div>
+          <div class="fin-stat-value income" id="h-income">--</div>
+        </div>
+        <div class="fin-stat">
+          <div class="fin-stat-label">Gastos del mes</div>
+          <div class="fin-stat-value expense" id="h-expense">--</div>
+        </div>
+        <div class="fin-stat">
+          <div class="fin-stat-label">Balance</div>
+          <div class="fin-stat-value savings" id="h-balance">--</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <footer>
+    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+  </footer>
+</div>
+
+<!-- CALENDAR PAGE -->
+<div id="page-calendar" class="page">
+  <div style="background: var(--navy); padding:2rem 2rem 1.5rem;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="font-family:var(--font-serif);font-size:1.8rem;font-weight:300;color:#fff;font-style:italic;">
+        Calendario
+      </div>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.82rem;margin-top:.25rem;">Tu tiempo, tus momentos.</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:2rem;">
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;" class="cal-layout">
+      <div class="calendar-wrap">
+        <div class="cal-nav">
+          <button class="cal-btn" onclick="calNav(-1)">&#8249;</button>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <select class="cal-month-select" id="calMonthSel" onchange="calGoTo()"></select>
+            <select class="cal-year-select" id="calYearSel" onchange="calGoTo()"></select>
+          </div>
+          <button class="cal-btn" onclick="calNav(1)">&#8250;</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-events">
+          <div class="cal-event-title">Eventos del dia seleccionado</div>
+          <div id="cal-day-events"><p style="font-size:.85rem;color:var(--text-muted);">Selecciona un dia para ver sus eventos.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:1.25rem;margin-bottom:1rem;">
+          <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;color:var(--text-primary);">Agregar evento</div>
+          <div class="form-group">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-input" id="evDate" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Evento</label>
+            <input type="text" class="form-input" id="evName" placeholder="Nombre del evento" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" id="evType">
+              <option value="cita">Cita</option>
+              <option value="recordatorio">Recordatorio</option>
+              <option value="especial">Fecha especial</option>
+              <option value="rutina">Rutina</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="addEvent()" style="width:100%;">Guardar evento</button>
+        </div>
+
+        <div class="card" style="padding:1.25rem;">
+          <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;color:var(--text-primary);">Proximos eventos</div>
+          <div id="upcoming-events"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer style="margin-top:2rem;">
+    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+  </footer>
+</div>
+
+<!-- FINANCES PAGE -->
+<div id="page-finances" class="page">
+  <div style="background:var(--navy);padding:2rem 2rem 1.5rem;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="font-family:var(--font-serif);font-size:1.8rem;font-weight:300;color:#fff;font-style:italic;">
+        Control Financiero
+      </div>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.82rem;margin-top:.25rem;">Tus gastos, ahorros e ingresos en un solo lugar.</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:2rem;">
+
+    <div class="finance-summary" id="fin-summary-main">
+      <div class="fin-stat">
+        <div class="fin-stat-label">Ingresos</div>
+        <div class="fin-stat-value income" id="fin-income">RD$ 0</div>
+      </div>
+      <div class="fin-stat">
+        <div class="fin-stat-label">Gastos</div>
+        <div class="fin-stat-value expense" id="fin-expense">RD$ 0</div>
+      </div>
+      <div class="fin-stat">
+        <div class="fin-stat-label">Balance</div>
+        <div class="fin-stat-value savings" id="fin-balance">RD$ 0</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;" class="fin-layout">
+      <div>
+        <div class="section-head" style="margin-bottom:1rem;">
+          <h2 class="section-title">Movimientos</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="finance-list" id="fin-list"></div>
+      </div>
+
+      <div>
+        <div class="card" style="padding:1.25rem;margin-bottom:1rem;">
+          <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;">Registrar movimiento</div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" id="finType">
+              <option value="ingreso">Ingreso</option>
+              <option value="gasto">Gasto</option>
+              <option value="ahorro">Ahorro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripcion</label>
+            <input type="text" class="form-input" id="finDesc" placeholder="Descripcion" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Monto (RD$)</label>
+              <input type="number" class="form-input" id="finAmount" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Categoria</label>
+              <select class="form-select" id="finCat">
+                <option>Comida</option>
+                <option>Transporte</option>
+                <option>Ropa</option>
+                <option>Salud</option>
+                <option>Entretenimiento</option>
+                <option>Salario</option>
+                <option>Ahorro</option>
+                <option>Otro</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addFinance()" style="width:100%;">Registrar</button>
+        </div>
+
+        <div class="card" style="padding:1.25rem;">
+          <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;">Metas de ahorro</div>
+          <div id="savings-goals-list"></div>
+          <button class="btn-outline" onclick="document.getElementById('modal-goal').classList.add('open')" style="width:100%;margin-top:.75rem;">+ Nueva meta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer style="margin-top:2rem;">
+    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+  </footer>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="page-admin" class="page">
+  <div class="admin-header">
+    <h2>Panel de Administracion</h2>
+    <p>Publica y gestiona todo el contenido de El Diario de Estrella.</p>
+  </div>
+
+  <div class="admin-tabs">
+    <div class="admin-tab active" onclick="showAdminTab('tab-images', this)">Imagenes</div>
+    <div class="admin-tab" onclick="showAdminTab('tab-pending', this)">Pendientes</div>
+    <div class="admin-tab" onclick="showAdminTab('tab-routine', this)">Rutina</div>
+    <div class="admin-tab" onclick="showAdminTab('tab-manage', this)">Gestionar</div>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- IMAGES TAB -->
+    <div id="tab-images" class="admin-panel active">
+      <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:400;margin-bottom:1.25rem;">Subir imagenes</div>
+
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="imgCategory">
+          <option value="horario">Horario</option>
+          <option value="ropa">Ropa / Look</option>
+          <option value="deseos">Deseos</option>
+          <option value="combinaciones">Combinaciones</option>
+          <option value="rutina">Rutina diaria</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Titulo (opcional)</label>
+        <input type="text" class="form-input" id="imgTitle" placeholder="Describe esta imagen" />
+      </div>
+
+      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-zone-icon">+</div>
+        <p><strong>Haz clic para seleccionar imagenes</strong></p>
+        <p style="margin-top:.25rem;font-size:.78rem;">JPG, PNG, WEBP &mdash; hasta 10MB por archivo</p>
+        <input type="file" id="fileInput" multiple accept="image/*" onchange="previewImages(this)" />
+      </div>
+
+      <div class="img-preview-grid" id="imgPreviewGrid"></div>
+
+      <div style="margin-top:1.25rem;display:flex;gap:.75rem;align-items:center;">
+        <button class="btn-primary" onclick="uploadImages()">Publicar imagenes</button>
+        <span id="upload-status" style="font-size:.82rem;color:var(--text-muted);"></span>
+      </div>
+    </div>
+
+    <!-- PENDING TAB -->
+    <div id="tab-pending" class="admin-panel">
+      <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:400;margin-bottom:1.25rem;">Nueva tarea pendiente</div>
+
+      <div class="form-group">
+        <label class="form-label">Tarea</label>
+        <input type="text" class="form-input" id="pTask" placeholder="Que tienes pendiente?" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Prioridad</label>
+          <select class="form-select" id="pPriority">
+            <option value="alta">Alta</option>
+            <option value="media" selected>Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha limite (opcional)</label>
+          <input type="date" class="form-input" id="pDue" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notas adicionales</label>
+        <textarea class="form-textarea" id="pNotes" placeholder="Detalles..."></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="addPending()">Agregar tarea</button>
+
+      <div style="margin-top:2rem;">
+        <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;">Tareas actuales</div>
+        <div id="admin-pending-list"></div>
+      </div>
+    </div>
+
+    <!-- ROUTINE TAB -->
+    <div id="tab-routine" class="admin-panel">
+      <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:400;margin-bottom:1.25rem;">Agregar bloque de rutina</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Hora</label>
+          <input type="time" class="form-input" id="rtTime" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Actividad</label>
+          <input type="text" class="form-input" id="rtActivity" placeholder="Que haces a esta hora?" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notas</label>
+        <textarea class="form-textarea" id="rtNotes" placeholder="Detalles opcionales..." style="min-height:60px;"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="addRoutine()">Agregar a la rutina</button>
+
+      <div style="margin-top:2rem;">
+        <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:400;margin-bottom:1rem;">Rutina actual</div>
+        <div id="admin-routine-list"></div>
+      </div>
+    </div>
+
+    <!-- MANAGE TAB -->
+    <div id="tab-manage" class="admin-panel">
+      <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:400;margin-bottom:1.25rem;">Gestionar publicaciones</div>
+      <div style="font-size:.85rem;color:var(--text-secondary);margin-bottom:1.5rem;">Administra y elimina el contenido publicado.</div>
+
+      <div style="font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:500;margin-bottom:.75rem;">Imagenes publicadas</div>
+      <div id="manage-images-list" style="margin-bottom:2rem;"></div>
+
+      <div style="font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:500;margin-bottom:.75rem;">Movimientos financieros</div>
+      <div id="manage-fin-list"></div>
+    </div>
+
+  </div>
+  <footer>
+    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+  </footer>
+</div>
+
+<!-- MODAL: SAVINGS GOAL -->
+<div class="modal-overlay" id="modal-goal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal-goal').classList.remove('open')">x</button>
+    <div class="modal-title">Nueva meta de ahorro</div>
+    <div class="form-group">
+      <label class="form-label">Nombre de la meta</label>
+      <input type="text" class="form-input" id="goalName" placeholder="Ej: Viaje, Bolso, etc." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Meta (RD$)</label>
+        <input type="number" class="form-input" id="goalTarget" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ahorrado hasta ahora</label>
+        <input type="number" class="form-input" id="goalCurrent" placeholder="0.00" />
+      </div>
+    </div>
+    <button class="btn-primary" onclick="addGoal()" style="width:100%;">Crear meta</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE + APP SCRIPT -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue, remove, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCH0Hgb83AFsVwkEteqW9G-dFV7ut-oxSo",
+    authDomain: "rouse-plataforma.firebaseapp.com",
+    projectId: "rouse-plataforma",
+    storageBucket: "rouse-plataforma.firebasestorage.app",
+    messagingSenderId: "63551997582",
+    appId: "1:63551997582:web:05a6975950989f92ca2bdf",
+    measurementId: "G-S7WDYD0XX9",
+    databaseURL: "https://rouse-plataforma-default-rtdb.firebaseio.com"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  // ---- TOAST ----
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  };
+
+  // ---- FORMAT CURRENCY ----
+  const fmt = (n) => 'RD$ ' + Number(n).toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // ---- FORMAT DATE ----
+  const fmtDate = (ts) => {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('es-DO', { day:'numeric', month:'short', year:'numeric' });
+  };
+
+  // ========== IMAGES ==========
+  let selectedFiles = [];
+
+  window.previewImages = (input) => {
+    const grid = document.getElementById('imgPreviewGrid');
+    grid.innerHTML = '';
+    selectedFiles = Array.from(input.files);
+    selectedFiles.forEach((file, i) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.className = 'img-preview-item';
+        div.innerHTML = `<img src="${e.target.result}" /><button class="img-preview-remove" onclick="removePreview(${i})">x</button>`;
+        grid.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  window.removePreview = (i) => {
+    selectedFiles.splice(i, 1);
+    const input = document.getElementById('fileInput');
+    const dt = new DataTransfer();
+    selectedFiles.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+    window.previewImages(input);
+  };
+
+  window.uploadImages = async () => {
+    if (!selectedFiles.length) { showToast('Selecciona al menos una imagen'); return; }
+    const cat = document.getElementById('imgCategory').value;
+    const title = document.getElementById('imgTitle').value.trim();
+    const status = document.getElementById('upload-status');
+    status.textContent = 'Subiendo...';
+
+    try {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const storRef = sRef(storage, `gallery/${Date.now()}_${file.name}`);
+        const snap = await uploadBytes(storRef, file);
+        const url = await getDownloadURL(snap.ref);
+        await push(ref(db, 'gallery'), {
+          url, cat, title: title || cat,
+          ts: Date.now()
+        });
+        status.textContent = `Subiendo ${i+1} de ${selectedFiles.length}...`;
+      }
+      status.textContent = '';
+      document.getElementById('imgTitle').value = '';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('imgPreviewGrid').innerHTML = '';
+      selectedFiles = [];
+      showToast('Imagenes publicadas correctamente');
+    } catch(e) {
+      status.textContent = 'Error al subir';
+      showToast('Error: ' + e.message);
+    }
+  };
+
+  const loadGallery = () => {
+    onValue(ref(db, 'gallery'), snap => {
+      const data = snap.val() || {};
+      const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
+      document.getElementById('gallery-count').textContent = items.length + ' fotos';
+
+      const feed = document.getElementById('gallery-feed');
+      feed.innerHTML = '';
+      if (!items.length) {
+        feed.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">+</div><p>Sin imagenes. Publica desde el panel Admin.</p></div>';
+        return;
+      }
+      items.forEach(([id, item]) => {
+        const d = document.createElement('div');
+        d.className = 'card img-card';
+        d.innerHTML = `
+          <div class="img-wrapper"><img src="${item.url}" alt="${item.title}" loading="lazy" /></div>
+          <div class="img-card-body">
+            <span class="img-card-tag">${item.cat}</span>
+            <div class="img-card-title">${item.title || item.cat}</div>
+            <div class="img-card-date">${fmtDate(item.ts)}</div>
+          </div>`;
+        feed.appendChild(d);
+      });
+
+      // manage tab
+      const mgmt = document.getElementById('manage-images-list');
+      mgmt.innerHTML = '';
+      items.forEach(([id, item]) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);';
+        div.innerHTML = `<img src="${item.url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;" />
+          <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${item.title||item.cat}</div><div style="font-size:.73rem;color:var(--text-muted);">${item.cat} &middot; ${fmtDate(item.ts)}</div></div>
+          <button class="btn-danger" onclick="deleteItem('gallery','${id}')">Eliminar</button>`;
+        mgmt.appendChild(div);
+      });
+    });
+  };
+
+  // ========== PENDING ==========
+  window.addPending = () => {
+    const task = document.getElementById('pTask').value.trim();
+    if (!task) { showToast('Escribe una tarea'); return; }
+    push(ref(db, 'pending'), {
+      task,
+      priority: document.getElementById('pPriority').value,
+      due: document.getElementById('pDue').value,
+      notes: document.getElementById('pNotes').value.trim(),
+      done: false,
+      ts: Date.now()
+    }).then(() => {
+      document.getElementById('pTask').value = '';
+      document.getElementById('pNotes').value = '';
+      document.getElementById('pDue').value = '';
+      showToast('Tarea agregada');
+    });
+  };
+
+  window.toggleDone = (id, current) => {
+    update(ref(db, `pending/${id}`), { done: !current });
+  };
+
+  const loadPending = () => {
+    onValue(ref(db, 'pending'), snap => {
+      const data = snap.val() || {};
+      const items = Object.entries(data).sort((a,b) => {
+        const po = { alta: 0, media: 1, baja: 2 };
+        return po[a[1].priority] - po[b[1].priority];
+      });
+      document.getElementById('pending-count').textContent = items.filter(i=>!i[1].done).length + ' activas';
+
+      // Group by priority for home
+      const feed = document.getElementById('pending-feed');
+      feed.innerHTML = '';
+      if (!items.length) {
+        feed.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Sin tareas pendientes.</p></div>';
+      } else {
+        // Split into 2 cards by done/undone
+        const undone = items.filter(i=>!i[1].done);
+        const done = items.filter(i=>i[1].done);
+        const makeCard = (arr, label) => {
+          if (!arr.length) return;
+          const card = document.createElement('div');
+          card.className = 'card pending-card';
+          card.innerHTML = `<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);font-weight:500;margin-bottom:.5rem;">${label}</div>` +
+            arr.map(([id, item]) => `
+              <div class="pending-item">
+                <div class="check-box ${item.done?'done':''}" onclick="toggleDone('${id}', ${item.done})"></div>
+                <div style="flex:1;">
+                  <div class="pending-text ${item.done?'done-text':''}">${item.task}</div>
+                  ${item.notes ? `<div style="font-size:.75rem;color:var(--text-muted);margin-top:2px;">${item.notes}</div>` : ''}
+                  ${item.due ? `<div style="font-size:.72rem;color:var(--blue-600);margin-top:2px;">Fecha: ${item.due}</div>` : ''}
+                </div>
+                <span class="pending-priority priority-${item.priority}">${item.priority}</span>
+              </div>`).join('');
+          feed.appendChild(card);
+        };
+        makeCard(undone, 'Pendientes');
+        makeCard(done, 'Completadas');
+      }
+
+      // Admin list
+      const al = document.getElementById('admin-pending-list');
+      al.innerHTML = '';
+      items.forEach(([id, item]) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:flex-start;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);';
+        div.innerHTML = `<div class="check-box ${item.done?'done':''}" onclick="toggleDone('${id}', ${item.done})" style="margin-top:2px;"></div>
+          <div style="flex:1;"><div style="font-size:.88rem;${item.done?'text-decoration:line-through;color:var(--text-muted);':''}">${item.task}</div>
+          <div style="font-size:.73rem;color:var(--text-muted);">${item.priority} ${item.due?'· '+item.due:''}</div></div>
+          <button class="btn-danger" onclick="deleteItem('pending','${id}')">x</button>`;
+        al.appendChild(div);
+      });
+    });
+  };
+
+  // ========== ROUTINE ==========
+  window.addRoutine = () => {
+    const time = document.getElementById('rtTime').value;
+    const activity = document.getElementById('rtActivity').value.trim();
+    if (!time || !activity) { showToast('Completa la hora y la actividad'); return; }
+    push(ref(db, 'routine'), {
+      time, activity,
+      notes: document.getElementById('rtNotes').value.trim(),
+      ts: Date.now()
+    }).then(() => {
+      document.getElementById('rtTime').value = '';
+      document.getElementById('rtActivity').value = '';
+      document.getElementById('rtNotes').value = '';
+      showToast('Bloque de rutina agregado');
+    });
+  };
+
+  const loadRoutine = () => {
+    onValue(ref(db, 'routine'), snap => {
+      const data = snap.val() || {};
+      const items = Object.entries(data).sort((a,b) => a[1].time.localeCompare(b[1].time));
+      document.getElementById('routine-count').textContent = items.length + ' bloques';
+
+      const feed = document.getElementById('routine-feed');
+      feed.innerHTML = '';
+      if (!items.length) {
+        feed.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Sin rutina configurada.</p></div>';
+        return;
+      }
+
+      // Group into cards of ~4 items each
+      const chunkSize = 5;
+      for (let i = 0; i < items.length; i += chunkSize) {
+        const chunk = items.slice(i, i + chunkSize);
+        const card = document.createElement('div');
+        card.className = 'card routine-card';
+        card.innerHTML = chunk.map(([id, item]) => `
+          <div class="time-block">
+            <span class="time-label">${item.time}</span>
+            <div class="time-dot"></div>
+            <div>
+              <div class="time-activity">${item.activity}</div>
+              ${item.notes ? `<div style="font-size:.73rem;color:var(--text-muted);margin-top:2px;">${item.notes}</div>` : ''}
+            </div>
+          </div>`).join('');
+        feed.appendChild(card);
+      }
+
+      // Admin list
+      const al = document.getElementById('admin-routine-list');
+      al.innerHTML = '';
+      items.forEach(([id, item]) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);';
+        div.innerHTML = `<span style="font-size:.75rem;color:var(--blue-600);font-weight:500;min-width:50px;">${item.time}</span>
+          <div style="flex:1;font-size:.88rem;">${item.activity}${item.notes?`<span style="color:var(--text-muted);font-size:.78rem;"> — ${item.notes}</span>`:''}  </div>
+          <button class="btn-danger" onclick="deleteItem('routine','${id}')">x</button>`;
+        al.appendChild(div);
+      });
+    });
+  };
+
+  // ========== FINANCES ==========
+  window.addFinance = () => {
+    const desc = document.getElementById('finDesc').value.trim();
+    const amount = parseFloat(document.getElementById('finAmount').value);
+    if (!desc || !amount) { showToast('Completa descripcion y monto'); return; }
+    push(ref(db, 'finances'), {
+      type: document.getElementById('finType').value,
+      desc, amount,
+      cat: document.getElementById('finCat').value,
+      ts: Date.now()
+    }).then(() => {
+      document.getElementById('finDesc').value = '';
+      document.getElementById('finAmount').value = '';
+      showToast('Movimiento registrado');
+    });
+  };
+
+  window.addGoal = () => {
+    const name = document.getElementById('goalName').value.trim();
+    const target = parseFloat(document.getElementById('goalTarget').value);
+    const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
+    if (!name || !target) { showToast('Completa el nombre y la meta'); return; }
+    push(ref(db, 'goals'), { name, target, current, ts: Date.now() })
+      .then(() => {
+        document.getElementById('goalName').value = '';
+        document.getElementById('goalTarget').value = '';
+        document.getElementById('goalCurrent').value = '';
+        document.getElementById('modal-goal').classList.remove('open');
+        showToast('Meta de ahorro creada');
+      });
+  };
+
+  const typeIcon = { ingreso: '+ ', gasto: '- ', ahorro: 'A ' };
+  const typeClass = { ingreso: 'in', gasto: 'out', ahorro: 'save' };
+
+  const loadFinances = () => {
+    onValue(ref(db, 'finances'), snap => {
+      const data = snap.val() || {};
+      const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
+
+      let income = 0, expense = 0, savings = 0;
+      items.forEach(([, i]) => {
+        if (i.type === 'ingreso') income += i.amount;
+        else if (i.type === 'gasto') expense += i.amount;
+        else if (i.type === 'ahorro') savings += i.amount;
+      });
+      const balance = income - expense - savings;
+
+      ['fin-income','h-income'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=fmt(income); });
+      ['fin-expense','h-expense'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=fmt(expense); });
+      ['fin-balance','h-balance'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=fmt(balance); });
+
+      const list = document.getElementById('fin-list');
+      list.innerHTML = '';
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state"><p>Sin movimientos registrados.</p></div>';
+        return;
+      }
+      items.forEach(([id, item]) => {
+        const div = document.createElement('div');
+        div.className = 'finance-item';
+        const cls = typeClass[item.type];
+        div.innerHTML = `<div class="fin-icon ${cls}">${typeIcon[item.type]}</div>
+          <div class="fin-details">
+            <div class="fin-name">${item.desc}</div>
+            <div class="fin-date">${item.cat} &middot; ${fmtDate(item.ts)}</div>
+          </div>
+          <div class="fin-amount ${cls}">${item.type==='ingreso'?'+':'-'} ${fmt(item.amount)}</div>`;
+        list.appendChild(div);
+      });
+
+      // Manage
+      const mf = document.getElementById('manage-fin-list');
+      mf.innerHTML = '';
+      items.slice(0,10).forEach(([id, item]) => {
+        const cls = typeClass[item.type];
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);';
+        div.innerHTML = `<span style="font-size:.75rem;font-weight:500;color:${cls==='in'?'#059669':cls==='out'?'#dc2626':'var(--blue-600)'};">${item.type}</span>
+          <div style="flex:1;font-size:.85rem;">${item.desc} <span style="color:var(--text-muted);font-size:.73rem;">· ${item.cat}</span></div>
+          <div style="font-size:.85rem;font-weight:500;">${fmt(item.amount)}</div>
+          <button class="btn-danger" onclick="deleteItem('finances','${id}')">x</button>`;
+        mf.appendChild(div);
+      });
+    });
+
+    onValue(ref(db, 'goals'), snap => {
+      const data = snap.val() || {};
+      const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
+      const list = document.getElementById('savings-goals-list');
+      list.innerHTML = '';
+      if (!items.length) {
+        list.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Sin metas creadas aun.</p>';
+        return;
+      }
+      items.forEach(([id, g]) => {
+        const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+        const div = document.createElement('div');
+        div.className = 'savings-goal';
+        div.innerHTML = `<div class="savings-goal-header">
+            <span class="savings-goal-name">${g.name}</span>
+            <span class="savings-goal-pct">${pct}%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="savings-goal-amounts">
+            <span>${fmt(g.current)} ahorrado</span>
+            <span>Meta: ${fmt(g.target)}</span>
+          </div>`;
+        list.appendChild(div);
+      });
+    });
+  };
+
+  // ========== DELETE ==========
+  window.deleteItem = (path, id) => {
+    if (!confirm('Confirmas eliminar este elemento?')) return;
+    remove(ref(db, `${path}/${id}`)).then(() => showToast('Eliminado'));
+  };
+
+  // ========== CALENDAR ==========
+  const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DAYS = ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
+  let calDate = new Date();
+  let calEvents = {};
+  let calSelected = null;
+
+  const calYearSel = document.getElementById('calYearSel');
+  const calMonthSel = document.getElementById('calMonthSel');
+
+  MONTHS.forEach((m, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = m;
+    calMonthSel.appendChild(o);
+  });
+
+  const startYear = 2000;
+  const endYear = 2060;
+  for (let y = startYear; y <= endYear; y++) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    calYearSel.appendChild(o);
+  }
+
+  const renderCal = () => {
+    const y = calDate.getFullYear();
+    const m = calDate.getMonth();
+    calMonthSel.value = m;
+    calYearSel.value = y;
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    DAYS.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-day-name';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    const firstDay = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const today = new Date();
+
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day empty';
+      grid.appendChild(el);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day';
+      el.textContent = d;
+
+      const isToday = today.getFullYear()===y && today.getMonth()===m && today.getDate()===d;
+      if (isToday) el.classList.add('today');
+
+      const dateKey = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (calEvents[dateKey] && calEvents[dateKey].length) el.classList.add('special');
+
+      if (calSelected === dateKey) el.classList.add('selected');
+
+      el.onclick = () => {
+        calSelected = dateKey;
+        renderCal();
+        showDayEvents(dateKey);
+      };
+
+      grid.appendChild(el);
+    }
+  };
+
+  const showDayEvents = (dateKey) => {
+    const evs = calEvents[dateKey] || [];
+    const container = document.getElementById('cal-day-events');
+    if (!evs.length) {
+      container.innerHTML = `<p style="font-size:.85rem;color:var(--text-muted);">Sin eventos para ${dateKey}.</p>`;
+      return;
+    }
+    container.innerHTML = evs.map(ev => `
+      <div class="cal-event-item">
+        <div class="cal-event-dot"></div>
+        <div style="flex:1;">
+          <div style="font-weight:500;font-size:.88rem;">${ev.name}</div>
+          <div style="font-size:.73rem;color:var(--text-muted);">${ev.type}</div>
+        </div>
+        <button class="btn-danger" onclick="deleteItem('events/${dateKey}','${ev.id}')">x</button>
+      </div>`).join('');
+  };
+
+  window.calNav = (dir) => {
+    calDate.setMonth(calDate.getMonth() + dir);
+    renderCal();
+  };
+
+  window.calGoTo = () => {
+    calDate = new Date(parseInt(calYearSel.value), parseInt(calMonthSel.value), 1);
+    renderCal();
+  };
+
+  window.addEvent = () => {
+    const date = document.getElementById('evDate').value;
+    const name = document.getElementById('evName').value.trim();
+    if (!date || !name) { showToast('Ingresa la fecha y el nombre del evento'); return; }
+    push(ref(db, `events/${date}`), {
+      name,
+      type: document.getElementById('evType').value,
+      ts: Date.now()
+    }).then(() => {
+      document.getElementById('evDate').value = '';
+      document.getElementById('evName').value = '';
+      showToast('Evento guardado');
+    });
+  };
+
+  onValue(ref(db, 'events'), snap => {
+    const data = snap.val() || {};
+    calEvents = {};
+    Object.entries(data).forEach(([date, evs]) => {
+      calEvents[date] = Object.entries(evs).map(([id, ev]) => ({ id, ...ev }));
+    });
+    renderCal();
+    if (calSelected) showDayEvents(calSelected);
+
+    // Upcoming
+    const upcoming = document.getElementById('upcoming-events');
+    upcoming.innerHTML = '';
+    const today = new Date().toISOString().split('T')[0];
+    const futureEvs = Object.entries(calEvents)
+      .filter(([d]) => d >= today)
+      .sort((a,b) => a[0].localeCompare(b[0]))
+      .slice(0, 5);
+
+    if (!futureEvs.length) {
+      upcoming.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Sin eventos proximos.</p>';
+      return;
+    }
+    futureEvs.forEach(([date, evs]) => {
+      evs.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'cal-event-item';
+        div.innerHTML = `<div class="cal-event-dot"></div>
+          <div><div style="font-weight:500;font-size:.85rem;">${ev.name}</div>
+          <div style="font-size:.73rem;color:var(--text-muted);">${date} &middot; ${ev.type}</div></div>`;
+        upcoming.appendChild(div);
+      });
+    });
+  });
+
+  renderCal();
+  loadGallery();
+  loadPending();
+  loadRoutine();
+  loadFinances();
+</script>
+
+<script>
+  // ---- PAGE NAVIGATION ----
+  function showPage(id, link) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (link) link.classList.add('active');
+  }
+
+  // ---- ADMIN TABS ----
+  function showAdminTab(id, tab) {
+    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    tab.classList.add('active');
+  }
+
+  // Close modal on overlay click
+  document.getElementById('modal-goal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+  // Responsive: collapse calendar layout on mobile
+  if (window.innerWidth < 900) {
+    document.querySelectorAll('.cal-layout, .fin-layout').forEach(el => {
+      el.style.gridTemplateColumns = '1fr';
+    });
+  }
+</script>
+</body>
+</html>
