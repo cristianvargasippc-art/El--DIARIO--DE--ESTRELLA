@@ -563,6 +563,30 @@
 
     .cal-day.today.special::after { background: rgba(255,255,255,0.7); }
 
+    .cal-day.love-day {
+      background: linear-gradient(135deg, var(--blue-50), #fff);
+      border: 1px solid var(--blue-200);
+      color: var(--blue-800);
+      font-weight: 600;
+    }
+
+    .cal-day.love-day::before {
+      content: '♡';
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 0.72rem;
+      color: var(--blue-500);
+    }
+
+    .cal-day.today.love-day {
+      background: var(--blue-600);
+      color: #fff;
+      border-color: var(--blue-600);
+    }
+
+    .cal-day.today.love-day::before { color: #fff; }
+
     .cal-day.empty { cursor: default; }
 
     .cal-events {
@@ -1012,7 +1036,7 @@
 <div id="page-home" class="page active">
   <div class="hero">
     <div class="hero-subtitle">Mi espacio personal</div>
-    <h1>El Diario de <em>Estrella</em></h1>
+    <h1>EL DIARIO DE <em>ESTRELLA</em></h1>
     <p class="hero-desc">Un lugar donde cada momento, cada plan y cada sueño tiene su lugar.</p>
   </div>
 
@@ -1084,7 +1108,7 @@
 
   </div>
   <footer>
-    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+    &copy; 2026 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
   </footer>
 </div>
 
@@ -1105,7 +1129,7 @@
           <button class="cal-btn" onclick="calNav(-1)">&#8249;</button>
           <div style="display:flex;align-items:center;gap:.75rem;">
             <select class="cal-month-select" id="calMonthSel" onchange="calGoTo()"></select>
-            <select class="cal-year-select" id="calYearSel" onchange="calGoTo()"></select>
+            <input class="cal-year-select" id="calYearSel" type="number" min="1" max="9999" onchange="calGoTo()" />
           </div>
           <button class="cal-btn" onclick="calNav(1)">&#8250;</button>
         </div>
@@ -1146,7 +1170,7 @@
     </div>
   </div>
   <footer style="margin-top:2rem;">
-    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+    &copy; 2026 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
   </footer>
 </div>
 
@@ -1232,7 +1256,7 @@
     </div>
   </div>
   <footer style="margin-top:2rem;">
-    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+    &copy; 2026 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
   </footer>
 </div>
 
@@ -1276,7 +1300,7 @@
       <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
         <div class="upload-zone-icon">+</div>
         <p><strong>Haz clic para seleccionar imagenes</strong></p>
-        <p style="margin-top:.25rem;font-size:.78rem;">JPG, PNG, WEBP &mdash; hasta 10MB por archivo</p>
+        <p style="margin-top:.25rem;font-size:.78rem;">JPG, PNG, WEBP y GIF guardadas en este navegador, sin Firebase</p>
         <input type="file" id="fileInput" multiple accept="image/*" onchange="previewImages(this)" />
       </div>
 
@@ -1367,7 +1391,7 @@
 
   </div>
   <footer>
-    &copy; 2025 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
+    &copy; 2026 El Diario de Estrella &mdash; <strong>Derechos reservados. El amor de tu vida.</strong>
   </footer>
 </div>
 
@@ -1397,26 +1421,83 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE + APP SCRIPT -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue, remove, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+<!-- LOCAL APP SCRIPT: sin Firebase / sin Firestore -->
+<script>
+  const DB_NAME = 'el-diario-de-estrella-local';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'content';
+  const STATE_KEY = 'app-state';
+  const emptyState = () => ({
+    gallery: {},
+    pending: {},
+    routine: {},
+    finances: {},
+    goals: {},
+    events: {}
+  });
+  let state = emptyState();
+  let dbReady = null;
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCH0Hgb83AFsVwkEteqW9G-dFV7ut-oxSo",
-    authDomain: "rouse-plataforma.firebaseapp.com",
-    projectId: "rouse-plataforma",
-    storageBucket: "rouse-plataforma.firebasestorage.app",
-    messagingSenderId: "63551997582",
-    appId: "1:63551997582:web:05a6975950989f92ca2bdf",
-    measurementId: "G-S7WDYD0XX9",
-    databaseURL: "https://rouse-plataforma-default-rtdb.firebaseio.com"
+  const uid = () => 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+
+  const openLocalDb = () => new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) {
+      resolve(null);
+      return;
+    }
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+
+  const loadState = async () => {
+    const db = await dbReady;
+    if (!db) {
+      state = JSON.parse(localStorage.getItem(STATE_KEY) || 'null') || emptyState();
+      return;
+    }
+    state = await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(STATE_KEY);
+      req.onsuccess = () => resolve(req.result || emptyState());
+      req.onerror = () => reject(req.error);
+    });
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const storage = getStorage(app);
+  const saveState = async () => {
+    const db = await dbReady;
+    if (!db) {
+      localStorage.setItem(STATE_KEY, JSON.stringify(state));
+      return;
+    }
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(state, STATE_KEY);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  };
+
+  const getBucket = (name) => {
+    if (!state[name]) state[name] = {};
+    return state[name];
+  };
+
+  const addRecord = async (bucket, value) => {
+    const id = uid();
+    getBucket(bucket)[id] = value;
+    await saveState();
+    renderAll();
+    return id;
+  };
+
+  const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
 
   // ---- TOAST ----
   window.showToast = (msg) => {
@@ -1438,17 +1519,21 @@
 
   // ========== IMAGES ==========
   let selectedFiles = [];
+  let selectedImageData = [];
 
   window.previewImages = (input) => {
     const grid = document.getElementById('imgPreviewGrid');
     grid.innerHTML = '';
     selectedFiles = Array.from(input.files);
+    selectedImageData = [];
     selectedFiles.forEach((file, i) => {
+      if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
       reader.onload = (e) => {
+        selectedImageData[i] = e.target.result;
         const div = document.createElement('div');
         div.className = 'img-preview-item';
-        div.innerHTML = `<img src="${e.target.result}" /><button class="img-preview-remove" onclick="removePreview(${i})">x</button>`;
+        div.innerHTML = `<img src="${e.target.result}" alt="Vista previa" /><button class="img-preview-remove" onclick="removePreview(${i})">x</button>`;
         grid.appendChild(div);
       };
       reader.readAsDataURL(file);
@@ -1464,25 +1549,60 @@
     window.previewImages(input);
   };
 
+  const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+
+  const optimizeImage = async (file) => {
+    if (file.type === 'image/gif') return fileToDataUrl(file);
+
+    const source = await fileToDataUrl(file);
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = source;
+    });
+
+    const maxSide = 2200;
+    const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+    if (scale === 1 && file.size < 900000) return source;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.9);
+  };
+
   window.uploadImages = async () => {
     if (!selectedFiles.length) { showToast('Selecciona al menos una imagen'); return; }
     const cat = document.getElementById('imgCategory').value;
     const title = document.getElementById('imgTitle').value.trim();
     const status = document.getElementById('upload-status');
-    status.textContent = 'Subiendo...';
+    status.textContent = 'Guardando en este navegador...';
 
     try {
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        const storRef = sRef(storage, `gallery/${Date.now()}_${file.name}`);
-        const snap = await uploadBytes(storRef, file);
-        const url = await getDownloadURL(snap.ref);
-        await push(ref(db, 'gallery'), {
-          url, cat, title: title || cat,
+        if (!file.type.startsWith('image/')) continue;
+        const url = await optimizeImage(file);
+        getBucket('gallery')[uid()] = {
+          url,
+          cat,
+          title: title || cat,
+          name: file.name,
+          size: file.size,
           ts: Date.now()
-        });
-        status.textContent = `Subiendo ${i+1} de ${selectedFiles.length}...`;
+        };
+        status.textContent = `Guardando ${i+1} de ${selectedFiles.length}...`;
       }
+      await saveState();
+      renderAll();
       status.textContent = '';
       document.getElementById('imgTitle').value = '';
       document.getElementById('fileInput').value = '';
@@ -1490,14 +1610,13 @@
       selectedFiles = [];
       showToast('Imagenes publicadas correctamente');
     } catch(e) {
-      status.textContent = 'Error al subir';
-      showToast('Error: ' + e.message);
+      status.textContent = 'Error al guardar';
+      showToast('No se pudo guardar: ' + e.message);
     }
   };
 
   const loadGallery = () => {
-    onValue(ref(db, 'gallery'), snap => {
-      const data = snap.val() || {};
+      const data = getBucket('gallery');
       const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
       document.getElementById('gallery-count').textContent = items.length + ' fotos';
 
@@ -1511,10 +1630,10 @@
         const d = document.createElement('div');
         d.className = 'card img-card';
         d.innerHTML = `
-          <div class="img-wrapper"><img src="${item.url}" alt="${item.title}" loading="lazy" /></div>
+          <div class="img-wrapper"><img src="${item.url}" alt="${escapeHtml(item.title)}" loading="lazy" /></div>
           <div class="img-card-body">
-            <span class="img-card-tag">${item.cat}</span>
-            <div class="img-card-title">${item.title || item.cat}</div>
+            <span class="img-card-tag">${escapeHtml(item.cat)}</span>
+            <div class="img-card-title">${escapeHtml(item.title || item.cat)}</div>
             <div class="img-card-date">${fmtDate(item.ts)}</div>
           </div>`;
         feed.appendChild(d);
@@ -1527,39 +1646,39 @@
         const div = document.createElement('div');
         div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);';
         div.innerHTML = `<img src="${item.url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;" />
-          <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${item.title||item.cat}</div><div style="font-size:.73rem;color:var(--text-muted);">${item.cat} &middot; ${fmtDate(item.ts)}</div></div>
+          <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${escapeHtml(item.title||item.cat)}</div><div style="font-size:.73rem;color:var(--text-muted);">${escapeHtml(item.cat)} &middot; ${fmtDate(item.ts)}</div></div>
           <button class="btn-danger" onclick="deleteItem('gallery','${id}')">Eliminar</button>`;
         mgmt.appendChild(div);
       });
-    });
   };
 
   // ========== PENDING ==========
-  window.addPending = () => {
+  window.addPending = async () => {
     const task = document.getElementById('pTask').value.trim();
     if (!task) { showToast('Escribe una tarea'); return; }
-    push(ref(db, 'pending'), {
+    await addRecord('pending', {
       task,
       priority: document.getElementById('pPriority').value,
       due: document.getElementById('pDue').value,
       notes: document.getElementById('pNotes').value.trim(),
       done: false,
       ts: Date.now()
-    }).then(() => {
-      document.getElementById('pTask').value = '';
-      document.getElementById('pNotes').value = '';
-      document.getElementById('pDue').value = '';
-      showToast('Tarea agregada');
     });
+    document.getElementById('pTask').value = '';
+    document.getElementById('pNotes').value = '';
+    document.getElementById('pDue').value = '';
+    showToast('Tarea agregada');
   };
 
-  window.toggleDone = (id, current) => {
-    update(ref(db, `pending/${id}`), { done: !current });
+  window.toggleDone = async (id, current) => {
+    if (!state.pending[id]) return;
+    state.pending[id].done = !current;
+    await saveState();
+    renderAll();
   };
 
   const loadPending = () => {
-    onValue(ref(db, 'pending'), snap => {
-      const data = snap.val() || {};
+      const data = getBucket('pending');
       const items = Object.entries(data).sort((a,b) => {
         const po = { alta: 0, media: 1, baja: 2 };
         return po[a[1].priority] - po[b[1].priority];
@@ -1584,9 +1703,9 @@
               <div class="pending-item">
                 <div class="check-box ${item.done?'done':''}" onclick="toggleDone('${id}', ${item.done})"></div>
                 <div style="flex:1;">
-                  <div class="pending-text ${item.done?'done-text':''}">${item.task}</div>
-                  ${item.notes ? `<div style="font-size:.75rem;color:var(--text-muted);margin-top:2px;">${item.notes}</div>` : ''}
-                  ${item.due ? `<div style="font-size:.72rem;color:var(--blue-600);margin-top:2px;">Fecha: ${item.due}</div>` : ''}
+                  <div class="pending-text ${item.done?'done-text':''}">${escapeHtml(item.task)}</div>
+                  ${item.notes ? `<div style="font-size:.75rem;color:var(--text-muted);margin-top:2px;">${escapeHtml(item.notes)}</div>` : ''}
+                  ${item.due ? `<div style="font-size:.72rem;color:var(--blue-600);margin-top:2px;">Fecha: ${escapeHtml(item.due)}</div>` : ''}
                 </div>
                 <span class="pending-priority priority-${item.priority}">${item.priority}</span>
               </div>`).join('');
@@ -1603,34 +1722,31 @@
         const div = document.createElement('div');
         div.style.cssText = 'display:flex;align-items:flex-start;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);';
         div.innerHTML = `<div class="check-box ${item.done?'done':''}" onclick="toggleDone('${id}', ${item.done})" style="margin-top:2px;"></div>
-          <div style="flex:1;"><div style="font-size:.88rem;${item.done?'text-decoration:line-through;color:var(--text-muted);':''}">${item.task}</div>
-          <div style="font-size:.73rem;color:var(--text-muted);">${item.priority} ${item.due?'· '+item.due:''}</div></div>
+          <div style="flex:1;"><div style="font-size:.88rem;${item.done?'text-decoration:line-through;color:var(--text-muted);':''}">${escapeHtml(item.task)}</div>
+          <div style="font-size:.73rem;color:var(--text-muted);">${escapeHtml(item.priority)} ${item.due?'· '+escapeHtml(item.due):''}</div></div>
           <button class="btn-danger" onclick="deleteItem('pending','${id}')">x</button>`;
         al.appendChild(div);
       });
-    });
   };
 
   // ========== ROUTINE ==========
-  window.addRoutine = () => {
+  window.addRoutine = async () => {
     const time = document.getElementById('rtTime').value;
     const activity = document.getElementById('rtActivity').value.trim();
     if (!time || !activity) { showToast('Completa la hora y la actividad'); return; }
-    push(ref(db, 'routine'), {
+    await addRecord('routine', {
       time, activity,
       notes: document.getElementById('rtNotes').value.trim(),
       ts: Date.now()
-    }).then(() => {
-      document.getElementById('rtTime').value = '';
-      document.getElementById('rtActivity').value = '';
-      document.getElementById('rtNotes').value = '';
-      showToast('Bloque de rutina agregado');
     });
+    document.getElementById('rtTime').value = '';
+    document.getElementById('rtActivity').value = '';
+    document.getElementById('rtNotes').value = '';
+    showToast('Bloque de rutina agregado');
   };
 
   const loadRoutine = () => {
-    onValue(ref(db, 'routine'), snap => {
-      const data = snap.val() || {};
+      const data = getBucket('routine');
       const items = Object.entries(data).sort((a,b) => a[1].time.localeCompare(b[1].time));
       document.getElementById('routine-count').textContent = items.length + ' bloques';
 
@@ -1652,8 +1768,8 @@
             <span class="time-label">${item.time}</span>
             <div class="time-dot"></div>
             <div>
-              <div class="time-activity">${item.activity}</div>
-              ${item.notes ? `<div style="font-size:.73rem;color:var(--text-muted);margin-top:2px;">${item.notes}</div>` : ''}
+              <div class="time-activity">${escapeHtml(item.activity)}</div>
+              ${item.notes ? `<div style="font-size:.73rem;color:var(--text-muted);margin-top:2px;">${escapeHtml(item.notes)}</div>` : ''}
             </div>
           </div>`).join('');
         feed.appendChild(card);
@@ -1666,51 +1782,46 @@
         const div = document.createElement('div');
         div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);';
         div.innerHTML = `<span style="font-size:.75rem;color:var(--blue-600);font-weight:500;min-width:50px;">${item.time}</span>
-          <div style="flex:1;font-size:.88rem;">${item.activity}${item.notes?`<span style="color:var(--text-muted);font-size:.78rem;"> — ${item.notes}</span>`:''}  </div>
+          <div style="flex:1;font-size:.88rem;">${escapeHtml(item.activity)}${item.notes?`<span style="color:var(--text-muted);font-size:.78rem;"> - ${escapeHtml(item.notes)}</span>`:''}  </div>
           <button class="btn-danger" onclick="deleteItem('routine','${id}')">x</button>`;
         al.appendChild(div);
       });
-    });
   };
 
   // ========== FINANCES ==========
-  window.addFinance = () => {
+  window.addFinance = async () => {
     const desc = document.getElementById('finDesc').value.trim();
     const amount = parseFloat(document.getElementById('finAmount').value);
     if (!desc || !amount) { showToast('Completa descripcion y monto'); return; }
-    push(ref(db, 'finances'), {
+    await addRecord('finances', {
       type: document.getElementById('finType').value,
       desc, amount,
       cat: document.getElementById('finCat').value,
       ts: Date.now()
-    }).then(() => {
-      document.getElementById('finDesc').value = '';
-      document.getElementById('finAmount').value = '';
-      showToast('Movimiento registrado');
     });
+    document.getElementById('finDesc').value = '';
+    document.getElementById('finAmount').value = '';
+    showToast('Movimiento registrado');
   };
 
-  window.addGoal = () => {
+  window.addGoal = async () => {
     const name = document.getElementById('goalName').value.trim();
     const target = parseFloat(document.getElementById('goalTarget').value);
     const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
     if (!name || !target) { showToast('Completa el nombre y la meta'); return; }
-    push(ref(db, 'goals'), { name, target, current, ts: Date.now() })
-      .then(() => {
-        document.getElementById('goalName').value = '';
-        document.getElementById('goalTarget').value = '';
-        document.getElementById('goalCurrent').value = '';
-        document.getElementById('modal-goal').classList.remove('open');
-        showToast('Meta de ahorro creada');
-      });
+    await addRecord('goals', { name, target, current, ts: Date.now() });
+    document.getElementById('goalName').value = '';
+    document.getElementById('goalTarget').value = '';
+    document.getElementById('goalCurrent').value = '';
+    document.getElementById('modal-goal').classList.remove('open');
+    showToast('Meta de ahorro creada');
   };
 
   const typeIcon = { ingreso: '+ ', gasto: '- ', ahorro: 'A ' };
   const typeClass = { ingreso: 'in', gasto: 'out', ahorro: 'save' };
 
   const loadFinances = () => {
-    onValue(ref(db, 'finances'), snap => {
-      const data = snap.val() || {};
+      const data = getBucket('finances');
       const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
 
       let income = 0, expense = 0, savings = 0;
@@ -1729,20 +1840,20 @@
       list.innerHTML = '';
       if (!items.length) {
         list.innerHTML = '<div class="empty-state"><p>Sin movimientos registrados.</p></div>';
-        return;
+      } else {
+        items.forEach(([id, item]) => {
+          const div = document.createElement('div');
+          div.className = 'finance-item';
+          const cls = typeClass[item.type];
+          div.innerHTML = `<div class="fin-icon ${cls}">${typeIcon[item.type]}</div>
+            <div class="fin-details">
+              <div class="fin-name">${escapeHtml(item.desc)}</div>
+              <div class="fin-date">${escapeHtml(item.cat)} &middot; ${fmtDate(item.ts)}</div>
+            </div>
+            <div class="fin-amount ${cls}">${item.type==='ingreso'?'+':'-'} ${fmt(item.amount)}</div>`;
+          list.appendChild(div);
+        });
       }
-      items.forEach(([id, item]) => {
-        const div = document.createElement('div');
-        div.className = 'finance-item';
-        const cls = typeClass[item.type];
-        div.innerHTML = `<div class="fin-icon ${cls}">${typeIcon[item.type]}</div>
-          <div class="fin-details">
-            <div class="fin-name">${item.desc}</div>
-            <div class="fin-date">${item.cat} &middot; ${fmtDate(item.ts)}</div>
-          </div>
-          <div class="fin-amount ${cls}">${item.type==='ingreso'?'+':'-'} ${fmt(item.amount)}</div>`;
-        list.appendChild(div);
-      });
 
       // Manage
       const mf = document.getElementById('manage-fin-list');
@@ -1752,28 +1863,26 @@
         const div = document.createElement('div');
         div.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);';
         div.innerHTML = `<span style="font-size:.75rem;font-weight:500;color:${cls==='in'?'#059669':cls==='out'?'#dc2626':'var(--blue-600)'};">${item.type}</span>
-          <div style="flex:1;font-size:.85rem;">${item.desc} <span style="color:var(--text-muted);font-size:.73rem;">· ${item.cat}</span></div>
+          <div style="flex:1;font-size:.85rem;">${escapeHtml(item.desc)} <span style="color:var(--text-muted);font-size:.73rem;">· ${escapeHtml(item.cat)}</span></div>
           <div style="font-size:.85rem;font-weight:500;">${fmt(item.amount)}</div>
           <button class="btn-danger" onclick="deleteItem('finances','${id}')">x</button>`;
         mf.appendChild(div);
       });
-    });
 
-    onValue(ref(db, 'goals'), snap => {
-      const data = snap.val() || {};
-      const items = Object.entries(data).sort((a,b) => b[1].ts - a[1].ts);
-      const list = document.getElementById('savings-goals-list');
-      list.innerHTML = '';
-      if (!items.length) {
-        list.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Sin metas creadas aun.</p>';
+      const goalsData = getBucket('goals');
+      const goalItems = Object.entries(goalsData).sort((a,b) => b[1].ts - a[1].ts);
+      const goalsList = document.getElementById('savings-goals-list');
+      goalsList.innerHTML = '';
+      if (!goalItems.length) {
+        goalsList.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Sin metas creadas aun.</p>';
         return;
       }
-      items.forEach(([id, g]) => {
+      goalItems.forEach(([id, g]) => {
         const pct = Math.min(100, Math.round((g.current / g.target) * 100));
         const div = document.createElement('div');
         div.className = 'savings-goal';
         div.innerHTML = `<div class="savings-goal-header">
-            <span class="savings-goal-name">${g.name}</span>
+            <span class="savings-goal-name">${escapeHtml(g.name)}</span>
             <span class="savings-goal-pct">${pct}%</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -1781,15 +1890,23 @@
             <span>${fmt(g.current)} ahorrado</span>
             <span>Meta: ${fmt(g.target)}</span>
           </div>`;
-        list.appendChild(div);
+        goalsList.appendChild(div);
       });
-    });
   };
 
   // ========== DELETE ==========
-  window.deleteItem = (path, id) => {
+  window.deleteItem = async (path, id) => {
     if (!confirm('Confirmas eliminar este elemento?')) return;
-    remove(ref(db, `${path}/${id}`)).then(() => showToast('Eliminado'));
+    const parts = path.split('/');
+    if (parts.length === 1) {
+      delete getBucket(parts[0])[id];
+    } else if (parts[0] === 'events' && state.events[parts[1]]) {
+      delete state.events[parts[1]][id];
+      if (!Object.keys(state.events[parts[1]]).length) delete state.events[parts[1]];
+    }
+    await saveState();
+    renderAll();
+    showToast('Eliminado');
   };
 
   // ========== CALENDAR ==========
@@ -1807,14 +1924,6 @@
     o.value = i; o.textContent = m;
     calMonthSel.appendChild(o);
   });
-
-  const startYear = 2000;
-  const endYear = 2060;
-  for (let y = startYear; y <= endYear; y++) {
-    const o = document.createElement('option');
-    o.value = y; o.textContent = y;
-    calYearSel.appendChild(o);
-  }
 
   const renderCal = () => {
     const y = calDate.getFullYear();
@@ -1851,7 +1960,11 @@
       if (isToday) el.classList.add('today');
 
       const dateKey = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      if (calEvents[dateKey] && calEvents[dateKey].length) el.classList.add('special');
+      if ((calEvents[dateKey] && calEvents[dateKey].length) || d === 29) el.classList.add('special');
+      if (d === 29) {
+        el.classList.add('love-day');
+        el.title = 'Dia 29 especial';
+      }
 
       if (calSelected === dateKey) el.classList.add('selected');
 
@@ -1866,7 +1979,9 @@
   };
 
   const showDayEvents = (dateKey) => {
-    const evs = calEvents[dateKey] || [];
+    const day = parseInt(dateKey.slice(-2), 10);
+    const base = day === 29 ? [{ id: 'dia-29', name: 'Dia 29 especial', type: 'amor bonito', locked: true }] : [];
+    const evs = [...base, ...(calEvents[dateKey] || [])];
     const container = document.getElementById('cal-day-events');
     if (!evs.length) {
       container.innerHTML = `<p style="font-size:.85rem;color:var(--text-muted);">Sin eventos para ${dateKey}.</p>`;
@@ -1876,10 +1991,10 @@
       <div class="cal-event-item">
         <div class="cal-event-dot"></div>
         <div style="flex:1;">
-          <div style="font-weight:500;font-size:.88rem;">${ev.name}</div>
-          <div style="font-size:.73rem;color:var(--text-muted);">${ev.type}</div>
+          <div style="font-weight:500;font-size:.88rem;">${escapeHtml(ev.name)}</div>
+          <div style="font-size:.73rem;color:var(--text-muted);">${escapeHtml(ev.type)}</div>
         </div>
-        <button class="btn-danger" onclick="deleteItem('events/${dateKey}','${ev.id}')">x</button>
+        ${ev.locked ? '' : `<button class="btn-danger" onclick="deleteItem('events/${dateKey}','${ev.id}')">x</button>`}
       </div>`).join('');
   };
 
@@ -1893,23 +2008,25 @@
     renderCal();
   };
 
-  window.addEvent = () => {
+  window.addEvent = async () => {
     const date = document.getElementById('evDate').value;
     const name = document.getElementById('evName').value.trim();
     if (!date || !name) { showToast('Ingresa la fecha y el nombre del evento'); return; }
-    push(ref(db, `events/${date}`), {
+    if (!state.events[date]) state.events[date] = {};
+    state.events[date][uid()] = {
       name,
       type: document.getElementById('evType').value,
       ts: Date.now()
-    }).then(() => {
-      document.getElementById('evDate').value = '';
-      document.getElementById('evName').value = '';
-      showToast('Evento guardado');
-    });
+    };
+    await saveState();
+    renderAll();
+    document.getElementById('evDate').value = '';
+    document.getElementById('evName').value = '';
+    showToast('Evento guardado');
   };
 
-  onValue(ref(db, 'events'), snap => {
-    const data = snap.val() || {};
+  const loadEvents = () => {
+    const data = getBucket('events');
     calEvents = {};
     Object.entries(data).forEach(([date, evs]) => {
       calEvents[date] = Object.entries(evs).map(([id, ev]) => ({ id, ...ev }));
@@ -1927,26 +2044,47 @@
       .slice(0, 5);
 
     if (!futureEvs.length) {
-      upcoming.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Sin eventos proximos.</p>';
-      return;
-    }
-    futureEvs.forEach(([date, evs]) => {
-      evs.forEach(ev => {
-        const div = document.createElement('div');
-        div.className = 'cal-event-item';
-        div.innerHTML = `<div class="cal-event-dot"></div>
-          <div><div style="font-weight:500;font-size:.85rem;">${ev.name}</div>
-          <div style="font-size:.73rem;color:var(--text-muted);">${date} &middot; ${ev.type}</div></div>`;
-        upcoming.appendChild(div);
+      upcoming.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">El proximo dia 29 tambien esta marcado como especial.</p>';
+    } else {
+      futureEvs.forEach(([date, evs]) => {
+        evs.forEach(ev => {
+          const div = document.createElement('div');
+          div.className = 'cal-event-item';
+          div.innerHTML = `<div class="cal-event-dot"></div>
+            <div><div style="font-weight:500;font-size:.85rem;">${escapeHtml(ev.name)}</div>
+            <div style="font-size:.73rem;color:var(--text-muted);">${date} &middot; ${escapeHtml(ev.type)}</div></div>`;
+          upcoming.appendChild(div);
+        });
       });
-    });
-  });
+    }
 
-  renderCal();
-  loadGallery();
-  loadPending();
-  loadRoutine();
-  loadFinances();
+    const next29 = new Date();
+    if (next29.getDate() > 29) next29.setMonth(next29.getMonth() + 1);
+    next29.setDate(29);
+    const div = document.createElement('div');
+    div.className = 'cal-event-item';
+    div.innerHTML = `<div class="cal-event-dot"></div>
+      <div><div style="font-weight:500;font-size:.85rem;">Dia 29 especial</div>
+      <div style="font-size:.73rem;color:var(--text-muted);">${next29.toISOString().split('T')[0]} &middot; amor bonito</div></div>`;
+    upcoming.appendChild(div);
+  };
+
+  const renderAll = () => {
+    loadGallery();
+    loadPending();
+    loadRoutine();
+    loadFinances();
+    loadEvents();
+  };
+
+  dbReady = openLocalDb().catch(() => null);
+  loadState()
+    .then(renderAll)
+    .catch((err) => {
+      console.error(err);
+      showToast('No se pudo abrir la base local');
+      renderAll();
+    });
 </script>
 
 <script>
